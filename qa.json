@@ -18,7 +18,7 @@
 },
   {
       "ParameterKey" : "InstanceSecurityGroup",
-       "ParameterValue": "sg-0c85ee75"
+       "ParameterValue": "sg-ee2bad97"
 }
 
 ]
