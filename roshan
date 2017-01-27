@@ -1,0 +1,124 @@
+SonarQube
+v5.6
+Architecture
+The SonarQube Platform is made of 4 components:
+1.	One SonarQube Server starting 3 main processes:
+a.	a Web Server for developers, managers to browse quality snapshots and configure the SonarQube instance
+b.	a Search Server based on Elasticsearch to back searches from the UI
+c.	a Compute Engine Server in charge of processing code analysis reports and saving them in the SonarQube Database
+
+2.	One SonarQube Database to store:
+•	The configuration of the SonarQube instance (security, plugins settings, etc.)
+•	The quality snapshots of projects, views, etc.
+3.	Multiple SonarQube Plugins installed on the server, possibly including language, SCM, integration, authentication, and governance plugins
+4.	One or more SonarQube Scanners running on your Build / Continuous Integration Servers to analyze projects
+
+ 
+
+
+Integration
+The following schema shows how SonarQube integrates with other ALM tools and where the various components of SonarQube are used.
+1.	Developers code in their IDEs and use SonarLint to run local analysis.
+2.	Developers push their code into their favourite SCM: git, SVN, TFVC, ...
+3.	The Continuous Integration Server triggers an automatic build, and the execution of the SonarQube Scanner required to run the SonarQube analysis.
+4.	The analysis report is sent to the SonarQube Server for processing.
+5.	SonarQube Server processes and stores the analysis report results in the SonarQube Database, and displays the results in the UI.
+6.	Developer reviews, comment, challenge their Issues to manage and reduce their Technical Debt through the SonarQube UI.
+7.	Managers receive Reports from the analysis.
+Ops use APIs to automate configuration and extract data from SonarQube.
+Ops use JMX to monitor SonarQube Server.
+
+
+ 
+
+
+Prerequisite:
+Requirement Name	Supported Versions	Additional Info
+Oracle JRE
+OpenJDK	 	8
+ 	8	The SonarQube Java analyzer is able to analyses any kind of Java source files regardless of the version of Java they comply with. But SonarQube analysis and the SonarQube Server require specific versions of the JVM.
+MySQL
+ 	5.6
+ 	5.7 	 	Must be configured to use UTF8 charset and a case-sensitive (CS) collation
+ 	Only InnoDB storage engine is supported, but not MyISAM
+ 	Only the bundled mysql-connector-java jar is supported
+Web Browser	 	IE 11
+ 	Edge 
+ 	Firefox 
+ 	Chrome 	
+Latest
+Updated
+Updated
+
+Installation (Linux/Unix Platform):
+1.	Download and unzip the SonarQube distribution (Downloads Link: https://www.sonarqube.org/downloads/
+$ cd /opt
+$ wget https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-5.6.5.zip
+$ unzip sonarqube-5.6.5.zip
+
+2.	Configure the environmental variables.
+
+$ export SONARQUBE_HOME=/opt/sonarqube-5.6.5
+$ export PATH=${PATH}:${SONARQUBE_HOME}/bin
+3.	Creating MySQL Sonar Database
+$ mysql –u root –p                   (press enter, and provide the root password)
+
+mysql> CREATE DATABASE sonar CHARACTER SET utf8 COLLATE utf8_general_ci;
+mysql> CREATE USER 'sonar' IDENTIFIED BY 'sonar';
+mysql> GRANT ALL ON sonar.* TO 'sonar'@'%' IDENTIFIED BY 'sonar';
+mysql> GRANT ALL ON sonar.* TO 'sonar'@'localhost' IDENTIFIED BY 'sonar';
+mysql> FLUSH PRIVILEGES;
+4.	Configure Database with SonarQube
+$ cd /opt/sonarqube-5.6.5/conf/
+$ vim sonar.properties   (Add the below lines)
+sonar.jdbc.username=sonar
+sonar.jdbc.password=sonar
+sonar.jdbc.url=jdbc:mysql://web.localhost:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance
+5.	Start the SonarQube server:
+$ cd sonarqube-5.6.5/bin/ ……. /
+$ ./sonar.sh
+
+Installing a Plugin:
+There is two options to install a plugin into SonarQube :
+1.	Automatically, from the SonarQube UI using the Update Center
+2.	Manually
+Using the Update Center
+If your SonarQube Server has been freshly installed, it won't be authorized to connect outside your company to download plugins. As a consequence, you will need to use the manual installation way.
+If you have access to the internet and you are connected with a SonarQube user having the Global Permission "Administer System", you can go in Settings > Update Center.
+	Locate the "Available Plugins" tab
+	Find the plugin you want to install
+	Click on Install and wait for the download to be processed
+Once done, you will need to restart your SonarQube Server.
+
+Manual Installation
+In the page dedicated to the plugin you want to install (ex: for Java: Clover), click on the "Download" link of the version compatible with your SonarQube version.  
+	Upload the downloaded jar file in your SonarQube Server and put it in the directory: $SONARQUBE_HOME/extensions/plugins.
+	If another version of the same plugin is already there, you need to remove/backup it as only one version of a given plugin must be available in the extensions/plugins directory.
+Once done, you will need to restart your SonarQube Server.
+
+License
+If you installed a Commercial Plugin, you will need to set the License Key before being able to use it. For that you need to:
+•	Go in Settings > General Settings > Licenses
+•	Find the field corresponding to your Plugin
+•	Set the License Key
+•	Don't forget to click on "Save Licenses Settings"
+
+SonarQube – Administration Guide: https://docs.sonarqube.org/display/SONARQUBE56/Administration+Guide
+SonarQube Scanner - Maven link: https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+Maven
+SonarQube Scanner - Jenkins link: https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+Jenkins
+
+SonarQube Upgrade:
+https://docs.sonarqube.org/display/SONARQUBE56/Upgrading
+
+
+
+
+
+
+
+
+
+
+
+
+
